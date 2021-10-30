@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Image, StyleSheet, Dimensions, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, Dimensions, View } from 'react-native';
+import { Icon } from 'react-native-elements';
 
 export const ImageViewer = ({ image, closeImage }) => {
   const [current, setCurrent] = useState(null);
@@ -9,7 +10,7 @@ export const ImageViewer = ({ image, closeImage }) => {
   });
 
   useEffect(() => {
-    const { width, height } = Dimensions.get('window');
+    const { width } = Dimensions.get('window');
     setSize({
       width: width,
       height: Math.floor(width * (3/4))
@@ -26,8 +27,9 @@ export const ImageViewer = ({ image, closeImage }) => {
         }}
         source={{ uri: current }}
       />
-      <Button
-        title='close'
+      <Icon
+        name='close'
+        reverse
         onPress={closeImage}
       />
     </View>
@@ -43,7 +45,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 3,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    
   },
   image: {
     resizeMode: 'cover',

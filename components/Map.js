@@ -32,11 +32,11 @@ export default function Map({ setLocation, storageHandler, setImage }) {
   }, []);
 
   const updateMap = async (location) => {
-    const nearby = await storageHandler.getImages({
+    const nearbyImages = await storageHandler.getImages({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude
     });
-    setImages(nearby);
+    setImages(nearbyImages);
   }
 
   const updateLocation = (location) => {
@@ -60,7 +60,7 @@ export default function Map({ setLocation, storageHandler, setImage }) {
       rotateEnabled={false}
       zoomEnabled={false}
       scrollEnabled={false}
-
+      toolbarEnabled={false}
     >
       {images.map(image => {
         return (

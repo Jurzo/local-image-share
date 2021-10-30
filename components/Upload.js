@@ -19,9 +19,7 @@ export default function Upload({
       <Text
         style={styles.infoText}
         h4
-      >
-        Save
-      </Text>
+      >Save</Text>
       <Icon
         name='save'
         reverse
@@ -35,9 +33,7 @@ export default function Upload({
       <Text
         style={styles.infoText}
         h4
-      >
-        Return
-      </Text>
+      >Return</Text>
     </View>
   );
 }
