@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Icon, Text } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function ImageSelector({ setImage }) {
@@ -18,16 +19,12 @@ export default function ImageSelector({ setImage }) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 0
+      quality: 0,
+      aspect: [4, 3]
     });
 
     if (!result.cancelled) {
       setImage(result.uri);
-      /* storageHandler.current.uploadImage(
-        result.uri,
-        'testi',
-        { lat: 60.208439814123835, lng: 24.961578620225893 }
-      ); */
     }
   }
 
@@ -39,16 +36,12 @@ export default function ImageSelector({ setImage }) {
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      quality: 0
+      quality: 0,
+      aspect: [4, 3]
     });
 
     if (!result.cancelled) {
       setImage(result.uri);
-      /* storageHandler.current.uploadImage(
-        result.uri,
-        'testi',
-        { lat: 60.208439814123835, lng: 24.961578620225893 }
-      ); */
     }
   }
 
@@ -64,16 +57,28 @@ export default function ImageSelector({ setImage }) {
 
   return (
     <View style={styles.buttonContainer}>
-      <Button
-        raised
-        title='Add picture'
+      <Text
+        style={styles.infoText}
+        h4
+      >
+        Gallery
+      </Text>
+      <Icon
+        name='source'
+        reverse
         onPress={pickImage}
       />
-      <Button
-        raised
-        title='Take picture'
+      <Icon
+        name='camera'
+        reverse
         onPress={takeImage}
       />
+      <Text
+        style={styles.infoText}
+        h4
+      >
+        Camera
+      </Text>
     </View>
   );
 }
@@ -83,9 +88,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     padding: 5,
-    bottom: 28,
+    bottom: 0,
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    zIndex: 2,
+    backgroundColor: 'rgba(0.1,0.1,0.1,0.5)',
   },
+  infoText: {
+    color: 'white'
+  }
 });

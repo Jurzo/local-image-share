@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import ImageSelector from './components/ImageSelector';
+import { ImageViewer } from './components/ImageViewer';
 import Map from './components/Map';
 import Upload from './components/Upload';
 import { StorageHandler } from './util/StorageHandler';
 
 export default function App() {
+  const [usersImage, setUsersImage] = useState(null);
   const [image, setImage] = useState(null);
   const [location, setLocation] = useState({
     latitude: undefined,
@@ -13,20 +15,29 @@ export default function App() {
   });
   const storageHandlerRef = useRef(new StorageHandler());
 
+  const closeImage = () => {
+    setImage(null);
+  }
+
   return (
     <View style={styles.container}>
       <Map
         setLocation={setLocation}
         storageHandler={storageHandlerRef.current}
-      />
-      <ImageSelector
         setImage={setImage}
       />
-      <Upload
-        imageURI={image}
-        location={location}
-        storageHandler={storageHandlerRef.current}
-      />
+      {usersImage ?
+        <Upload
+          imageURI={usersImage}
+          setImage={setUsersImage}
+          location={location}
+          storageHandler={storageHandlerRef.current}
+        />
+        :
+        <ImageSelector
+          setImage={setUsersImage}
+        />}
+      {image ? <ImageViewer image={image} closeImage={closeImage} /> : null}
     </View>
   );
 }

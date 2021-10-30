@@ -3,7 +3,7 @@ import { Image, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export default function Map({ setLocation, storageHandler }) {
+export default function Map({ setLocation, storageHandler, setImage }) {
   const zoom = 0.04;
   const [region, setRegion] = useState({
     latitude: 60.200692,
@@ -22,13 +22,14 @@ export default function Map({ setLocation, storageHandler }) {
         alert('App requires location permission to work');
         return;
       }
+      getLocation();
     })();
 
     return (() => clearInterval(interval));
   }, []);
 
   const updateMap = async () => {
-    getLocation();
+    await getLocation();
     const nearby = await storageHandler.getImages({
       latitude: region.latitude,
       longitude: region.longitude
@@ -60,8 +61,9 @@ export default function Map({ setLocation, storageHandler }) {
       region={region}
       pitchEnabled={false}
       rotateEnabled={false}
-      zoomEnabled={true}
+      zoomEnabled={false}
       scrollEnabled={false}
+      
     >
       {/* <Marker
         coordinate={{
@@ -77,8 +79,8 @@ export default function Map({ setLocation, storageHandler }) {
               latitude: image.doc.lat,
               longitude: image.doc.lng
             }}
-            onSelect={() => console.log(image.doc.data)}
-            onPress={() => console.log(image.doc.data)}
+            onSelect={() => setImage(image.doc.data)}
+            onPress={() => setImage(image.doc.data)}
           >
             <Image
               style={styles.marker}
