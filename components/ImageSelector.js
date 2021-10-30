@@ -5,17 +5,13 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function ImageSelector({ setImage }) {
   const [isCameraReady, setCameraReady] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Camera roll permission required for the app to work.');
-      }
-    })();
-  }, []);
+  const [isGalleryReady, setGalleryReady] = useState(false);
 
   const pickImage = async () => {
+    if (!isGalleryReady) {
+      const perm = await getGalleryPermission();
+      if (!perm) return;
+    }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -26,6 +22,16 @@ export default function ImageSelector({ setImage }) {
     if (!result.cancelled) {
       setImage(result.uri);
     }
+  }
+
+  const getGalleryPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync;
+    if (status !== 'granted') {
+      alert('Permission required to take photos');
+      return false;
+    }
+    setGalleryReady(true);
+    return true;
   }
 
   const takeImage = async () => {

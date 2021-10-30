@@ -11,6 +11,7 @@ export const ImageViewer = ({ image, closeImage }) => {
 
   useEffect(() => {
     const { width } = Dimensions.get('window');
+    // Set image size to 4:3 aspect
     setSize({
       width: width,
       height: Math.floor(width * (3/4))

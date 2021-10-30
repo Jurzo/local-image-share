@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import ImageSelector from './components/ImageSelector';
 import { ImageViewer } from './components/ImageViewer';
 import Map from './components/Map';
