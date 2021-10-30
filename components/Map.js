@@ -13,42 +13,39 @@ export default function Map({ setLocation, storageHandler, setImage }) {
   });
   const [images, setImages] = useState([]);
 
-  useEffect(() => {
-    const interval = setInterval(updateMap, 10000);
+  useEffect(async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      alert('App requires location permission to work');
+      return;
+    }
 
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('App requires location permission to work');
-        return;
-      }
-      getLocation();
-    })();
+    // Update map when 50 metres from last location
+    const subscription = await Location.watchPositionAsync({ accuracy: 4, distanceInterval: 50 }, (location) => {
+      updateMap(location);
+      updateLocation(location);
+    });
 
-    return (() => clearInterval(interval));
+    return (() => {
+      subscription.remove();
+    });
   }, []);
 
-  const updateMap = async () => {
-    await getLocation();
+  const updateMap = async (location) => {
     const nearby = await storageHandler.getImages({
-      latitude: region.latitude,
-      longitude: region.longitude
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude
     });
     setImages(nearby);
   }
 
-  const getLocation = async () => {
-    const { status } = await Location.getForegroundPermissionsAsync();
-    if (status !== 'granted') return;
-
-    const location = await Location.getLastKnownPositionAsync({
-      accuracy: 6,
-    });
+  const updateLocation = (location) => {
     setRegion({
       ...region,
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     });
+    // set location data for uploading images
     setLocation({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
@@ -63,14 +60,8 @@ export default function Map({ setLocation, storageHandler, setImage }) {
       rotateEnabled={false}
       zoomEnabled={false}
       scrollEnabled={false}
-      
+
     >
-      {/* <Marker
-        coordinate={{
-          latitude: region.latitude,
-          longitude: region.longitude
-        }}
-      /> */}
       {images.map(image => {
         return (
           <Marker
@@ -84,7 +75,7 @@ export default function Map({ setLocation, storageHandler, setImage }) {
           >
             <Image
               style={styles.marker}
-              source={{uri: image.doc.data}}
+              source={{ uri: image.doc.data }}
             />
           </Marker>
         );

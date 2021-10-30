@@ -17,20 +17,25 @@ export class StorageHandler {
   constructor() {
     const app = initializeApp(firebaseConfig);
     this.storage = getStorage(app);
-    this.firestore = getFirestore(app);
-    this.imageCollection = collection(this.firestore, 'images');
+    const firestore = getFirestore(app);
+    this.imageCollection = collection(firestore, 'images');
   }
 
   uploadImage = async (uri, location) => {
+    // Create location hash for queries
     const { latitude, longitude } = location;
     const hash = geofire.geohashForLocation([latitude, longitude]);
+
     const response = await fetch(uri);
     const imageBlob = await response.blob();
+    // Generate uuid to get unique name for every image uploaded
     const uuid = create_UUID();
-    const storageRef = getStorageRef(this.storage, uuid);
 
+    // Upload image to firebase storage
+    const storageRef = getStorageRef(this.storage, uuid);
     await uploadBytes(storageRef, imageBlob);
     const url = await getDownloadURL(storageRef);
+    // Set reference to stored image in database
     await addDoc(this.imageCollection, {
       data: url,
       hash: hash,
@@ -41,8 +46,9 @@ export class StorageHandler {
 
   getImages = async (location) => {
     const center = [location.latitude, location.longitude];
-    const radius = 10000; // In metres
+    const radius = 2000; // In metres
 
+    // Generate queries based on location and radius
     const bounds = geofire.geohashQueryBounds(center, radius);
     const queries = [];
     for (const b of bounds) {
@@ -53,6 +59,8 @@ export class StorageHandler {
         endAt(b[1])
       ));
     }
+    // Get documents from queries and do
+    // a finer check with lat and lng
     const images = [];
     for (const q of queries) {
       const snapshot = await getDocs(q);
