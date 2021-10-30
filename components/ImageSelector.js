@@ -1,12 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { StorageHandler } from '../util/StorageHandler';
 
-export default function ImageSelector() {
-  const [image, setImage] = useState(null);
+export default function ImageSelector({ setImage }) {
   const [isCameraReady, setCameraReady] = useState(false);
-  const storageHandler = useRef(new StorageHandler());
 
   useEffect(() => {
     (async () => {
@@ -24,15 +21,13 @@ export default function ImageSelector() {
       quality: 0
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       setImage(result.uri);
-      storageHandler.current.uploadImage(
+      /* storageHandler.current.uploadImage(
         result.uri,
         'testi',
         { lat: 60.208439814123835, lng: 24.961578620225893 }
-      );
+      ); */
     }
   }
 
@@ -47,15 +42,13 @@ export default function ImageSelector() {
       quality: 0
     });
 
-    console.log(result);
-
     if (!result.cancelled) {
       setImage(result.uri);
-      storageHandler.current.uploadImage(
+      /* storageHandler.current.uploadImage(
         result.uri,
         'testi',
         { lat: 60.208439814123835, lng: 24.961578620225893 }
-      );
+      ); */
     }
   }
 
