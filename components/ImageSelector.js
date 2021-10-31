@@ -25,7 +25,7 @@ export default function ImageSelector({ setImage }) {
   }
 
   const getGalleryPermission = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync;
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Permission required to take photos');
       return false;
