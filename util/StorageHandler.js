@@ -46,7 +46,7 @@ export class StorageHandler {
 
   getImages = async (location) => {
     const center = [location.latitude, location.longitude];
-    const radius = 2000; // In metres
+    const radius = 1000; // In metres
 
     // Generate queries based on location and radius
     const bounds = geofire.geohashQueryBounds(center, radius);
@@ -68,6 +68,7 @@ export class StorageHandler {
         const imageDoc = doc.data();
         const { lat, lng } = imageDoc;
         
+        // distance in metres
         const distanceToCenter = geofire.distanceBetween([lat, lng], center) * 1000;
         if (distanceToCenter <= radius) {
           images.push({ doc: imageDoc, id: doc.id });

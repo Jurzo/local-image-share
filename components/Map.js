@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { distanceBetween } from 'geofire-common';
 
 export default function Map({ setLocation, storageHandler, setImage }) {
-  const zoom = 0.04;
   const [region, setRegion] = useState({
     latitude: 60.200692,
     longitude: 24.934302,
-    latitudeDelta: zoom,
-    longitudeDelta: zoom,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
   });
   const [images, setImages] = useState([]);
+  const mapRef = useRef();
 
   useEffect(async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -22,8 +23,8 @@ export default function Map({ setLocation, storageHandler, setImage }) {
 
     // Update map when 50 metres from last location
     const subscription = await Location.watchPositionAsync({ accuracy: 4, distanceInterval: 50 }, (location) => {
-      updateMap(location);
-      updateLocation(location);
+      updateMap(location.coords);
+      updateLocation(location.coords);
     });
 
     return (() => {
@@ -31,36 +32,67 @@ export default function Map({ setLocation, storageHandler, setImage }) {
     });
   }, []);
 
-  const updateMap = async (location) => {
+  const updateMap = async ({ latitude, longitude }) => {
     const nearbyImages = await storageHandler.getImages({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude
+      latitude: latitude,
+      longitude: longitude
     });
     setImages(nearbyImages);
   }
 
-  const updateLocation = (location) => {
+  const updateLocation = (coords) => {
+    const { latitude, longitude } = coords;
     setRegion({
       ...region,
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
+      latitude: latitude,
+      longitude: longitude,
     });
     // set location data for uploading images
     setLocation({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    })
+      latitude: latitude,
+      longitude: longitude,
+    });
+    animateToLocation(coords);
+    // restricting panning on map to nearby locations
+    if (mapRef.current) {
+      mapRef.current.setMapBoundaries(
+        {
+          latitude: latitude + 0.005,
+          longitude: longitude + 0.01
+        },
+        {
+          latitude: latitude - 0.005,
+          longitude: longitude - 0.01
+        }
+      )
+    }
+  }
+
+  const animateToLocation = ({ latitude, longitude }) => {
+    if (mapRef.current) {
+      const newCamera = {
+        center: {
+          latitude: latitude,
+          longitude: longitude
+        }
+      };
+      mapRef.current.animateCamera(newCamera, { duration: 1 });
+    }
   }
 
   return (
     <MapView
       style={styles.map}
-      region={region}
-      pitchEnabled={false}
+      initialRegion={region}
+      scrollEnabled={true}
       rotateEnabled={false}
-      zoomEnabled={false}
-      scrollEnabled={false}
+      zoomEnabled={true}
       toolbarEnabled={false}
+      showsUserLocation={true}
+      showsMyLocationButton={false}
+      minZoomLevel={15}
+      maxZoomLevel={18}
+      ref={mapRef}
     >
       {images.map(image => {
         return (

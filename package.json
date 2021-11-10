@@ -19,10 +19,12 @@
     "react-native": "0.64.2",
     "react-native-elements": "^3.4.2",
     "react-native-maps": "0.28.0",
-    "react-native-web": "0.17.1"
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-web": "^0.17.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "babel-plugin-inline-dotenv": "^1.6.0"
   },
   "private": true
 }
