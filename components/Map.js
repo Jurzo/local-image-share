@@ -20,16 +20,22 @@ export default function Map({ setLocation, storageHandler, setImage }) {
       return;
     }
 
-    // Update map when 50 metres from last location
-    const subscription = await Location.watchPositionAsync({ accuracy: 4, distanceInterval: 50 }, (location) => {
-      updateMap(location.coords);
-      updateLocation(location.coords);
-    });
+    await update();
+    const interval = setInterval(update, 5000);
 
     return (() => {
-      subscription.remove();
+      clearInterval(interval);
     });
   }, []);
+
+  const update = async () => {
+    const { status } = await Location.getForegroundPermissionsAsync();
+    if (status !== 'granted') return;
+
+    const location = await Location.getCurrentPositionAsync({ accuracy: 4 });
+    await updateLocation(location.coords);
+    await updateMap(location.coords);
+  }
 
   const updateMap = async ({ latitude, longitude }) => {
     const nearbyImages = await storageHandler.getImages({
