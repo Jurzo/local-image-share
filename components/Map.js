@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { distanceBetween } from 'geofire-common';
 
 export default function Map({ setLocation, storageHandler, setImage }) {
   const [region, setRegion] = useState({

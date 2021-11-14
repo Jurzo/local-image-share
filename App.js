@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { LogBox, StyleSheet, View } from 'react-native';
 import ImageSelector from './components/ImageSelector';
 import { ImageViewer } from './components/ImageViewer';
 import Map from './components/Map';
@@ -19,6 +19,11 @@ export default function App() {
     setImage(null);
   }
 
+  useEffect(()=> {
+    LogBox.ignoreLogs(['Setting a timer']);
+  },[]);
+
+  // move everything to map so that it can be updated when an image is uploaded
   return (
     <View style={styles.container}>
       <Map
