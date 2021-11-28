@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text } from 'react-native-elements';
 
-export default function Upload({
+export default function Uploader({
+  callback,
   imageURI,
   location,
   storageHandler,
@@ -10,7 +11,7 @@ export default function Upload({
 }) {
 
   const store = () => {
-    storageHandler.uploadImage(imageURI, location);
+    storageHandler.uploadImage(imageURI, location, callback);
     setImage(null);
   }
 
@@ -19,7 +20,9 @@ export default function Upload({
       <Text
         style={styles.infoText}
         h4
-      >Save</Text>
+      >
+        Save
+      </Text>
       <Icon
         name='save'
         reverse
@@ -33,7 +36,9 @@ export default function Upload({
       <Text
         style={styles.infoText}
         h4
-      >Return</Text>
+      >
+        Return
+      </Text>
     </View>
   );
 }

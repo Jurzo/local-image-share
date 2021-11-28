@@ -21,7 +21,7 @@ export class StorageHandler {
     this.imageCollection = collection(firestore, 'images');
   }
 
-  uploadImage = async (uri, location) => {
+  uploadImage = async (uri, location, callback) => {
     // Create location hash for queries
     const { latitude, longitude } = location;
     const hash = geofire.geohashForLocation([latitude, longitude]);
@@ -42,6 +42,7 @@ export class StorageHandler {
       lat: latitude,
       lng: longitude
     });
+    callback(location);
   }
 
   getImages = async (location) => {
@@ -79,6 +80,7 @@ export class StorageHandler {
   }
 }
 
+// from https://www.w3resource.com/javascript-exercises/javascript-math-exercise-23.php
 const create_UUID = () => {
   var dt = new Date().getTime();
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
