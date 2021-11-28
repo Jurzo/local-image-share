@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text } from 'react-native-elements';
 
@@ -9,11 +9,16 @@ export default function Uploader({
   storageHandler,
   setImage
 }) {
+  const [loc, setLoc] = useState(null);
 
-  const store = () => {
-    storageHandler.uploadImage(imageURI, location, callback);
+  const store = (imageLocation) => {
+    storageHandler.uploadImage(imageURI, imageLocation, callback);
     setImage(null);
   }
+
+  useEffect(() => {
+    setLoc(location);
+  }, [location]);
 
   return (
     <View style={styles.buttonContainer}>
@@ -26,7 +31,7 @@ export default function Uploader({
       <Icon
         name='save'
         reverse
-        onPress={store}
+        onPress={() => store(loc)}
       />
       <Icon
         name='close'

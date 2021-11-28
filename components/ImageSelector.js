@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Icon, Text } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
