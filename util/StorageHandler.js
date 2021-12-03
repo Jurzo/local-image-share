@@ -26,23 +26,29 @@ export class StorageHandler {
     const { latitude, longitude } = location;
     const hash = geofire.geohashForLocation([latitude, longitude]);
 
-    const response = await fetch(uri);
-    const imageBlob = await response.blob();
-    // Generate uuid to get unique name for every image uploaded
-    const uuid = create_UUID();
+    try {
+      const response = await fetch(uri);
+      const imageBlob = await response.blob();
+      // Generate uuid to get unique name for every image uploaded
+      const uuid = create_UUID();
 
-    // Upload image to firebase storage
-    const storageRef = getStorageRef(this.storage, uuid);
-    await uploadBytes(storageRef, imageBlob);
-    const url = await getDownloadURL(storageRef);
-    // Set reference to stored image in database
-    await addDoc(this.imageCollection, {
-      data: url,
-      hash: hash,
-      lat: latitude,
-      lng: longitude
-    });
+      // Upload image to firebase storage
+      const storageRef = getStorageRef(this.storage, uuid);
+      const result = await uploadBytes(storageRef, imageBlob);
+      const url = await getDownloadURL(storageRef);
+      // Set reference to stored image in database
+      await addDoc(this.imageCollection, {
+        data: url,
+        hash: hash,
+        lat: latitude,
+        lng: longitude
+      });
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
     callback(location);
+    return true;
   }
 
   getImages = async (location) => {
@@ -68,7 +74,7 @@ export class StorageHandler {
       snapshot.forEach(doc => {
         const imageDoc = doc.data();
         const { lat, lng } = imageDoc;
-        
+
         // distance in metres
         const distanceToCenter = geofire.distanceBetween([lat, lng], center) * 1000;
         if (distanceToCenter <= radius) {
